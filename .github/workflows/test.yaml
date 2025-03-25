@@ -21,3 +21,10 @@ jobs:
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - name: flakehub-cache-action
+        uses: DeterminateSystems/flakehub-cache-action@b71095acadea12c85f1aa62bd16aefcad539271b
+        with:
+          source-pr: 130
