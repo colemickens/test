@@ -16,3 +16,8 @@ jobs:
 
       - name: debug
         run: cat /home/runner/work/_temp/_github_workflow/event.json
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
