@@ -33,6 +33,7 @@ jobs:
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
           visibility: public
+          rolling: true
       - name: Breakpoint
         if: always()
         uses: namespacelabs/breakpoint-action@v0
@@ -45,6 +46,7 @@ jobs:
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
           visibility: public
+          rolling: true
       - name: Breakpoint
         if: always()
         uses: namespacelabs/breakpoint-action@v0
@@ -57,6 +59,7 @@ jobs:
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
           visibility: public
+          rolling: true
       - name: Breakpoint
         if: always()
         uses: namespacelabs/breakpoint-action@v0
@@ -69,6 +72,7 @@ jobs:
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
           visibility: public
+          rolling: true
       - name: Breakpoint
         if: always()
         uses: namespacelabs/breakpoint-action@v0
