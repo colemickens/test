@@ -24,8 +24,8 @@ jobs:
 
       - uses: DeterminateSystems/nix-installer-action@main
 
-      - name: flakehub-cache-action
-        uses: DeterminateSystems/flakehub-cache-action@main
+      - name: flakehub-push
+        uses: DeterminateSystems/flakehub-push@main
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
       - name: Breakpoint
@@ -33,8 +33,8 @@ jobs:
         with:
           authorized-users: colemickens
 
-      - name: flakehub-cache-action
-        uses: DeterminateSystems/flakehub-cache-action@main
+      - name: flakehub-push
+        uses: DeterminateSystems/flakehub-push@main
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
       - name: Breakpoint
@@ -42,8 +42,8 @@ jobs:
         with:
           authorized-users: colemickens
           
-      - name: flakehub-cache-action
-        uses: DeterminateSystems/flakehub-cache-action@main
+      - name: flakehub-push
+        uses: DeterminateSystems/flakehub-push@main
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
       - name: Breakpoint
@@ -51,8 +51,8 @@ jobs:
         with:
           authorized-users: colemickens
 
-      - name: flakehub-cache-action
-        uses: DeterminateSystems/flakehub-cache-action@main
+      - name: flakehub-push
+        uses: DeterminateSystems/flakehub-push@main
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
       - name: Breakpoint
