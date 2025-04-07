@@ -28,7 +28,7 @@ blocks:
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
           - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
-          - systemctl cat detreminate-nixd.service
+          - systemctl cat determinate-nixd.service
           - exit -1
 
           - echo "[Service]\n" > /etc/systemd/system/determinate-nixd.service.d/override-flakehub-api-addr.conf
