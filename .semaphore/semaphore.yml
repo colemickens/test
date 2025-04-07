@@ -10,14 +10,14 @@ blocks:
     task:
       jobs:
         - name: 'Job #1'
-          commands: 
-          - echo $HOME
+          commands:
+          - mkdir /home/semaphore/cache
           - export FLAKEHUB_PUSH_HOST="https://api.cluster-activate-exited.ngrok-free.app/"
           - export FLAKEHUB_WEB_ENDPOINT="https://web.cluster-activate-exited.ngrok-free.app"
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
-          - export NIX_INSTALLER_EXTRA_CONF="~/cache/flakehub-extra-conf"
-          - export NIX_INSTALLER_NETRC="~/cache/nix-netrc"
+          - export NIX_INSTALLER_EXTRA_CONF="/home/semaphore/cache/flakehub-extra-conf"
+          - export NIX_INSTALLER_NETRC="/home/semaphore/cache/nix-netrc"
 
           - echo "machine ${FLAKEHUB_WEB_ENDPOINT} login flakehub password ${SEMAPHORE_OIDC_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
           - echo "machine ${FLAKEHUB_API_ENDPOINT} login flakehub password ${SEMAPHORE_OIDC_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
