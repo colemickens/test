@@ -41,5 +41,7 @@ blocks:
           - sudo env PAGER=cat systemctl cat nix-daemon.service
           - sudo systemctl restart nix-daemon || true
           - sudo env PAGER=cat systemctl status nix-daemon.service
-          - RUST_LOG=debug determinate-nixd login token --token-file "/tmp/semaphore-token"
+
+          - echo "TODO: why does this use api-addr from here? daemon is what logs in"
+          - RUST_LOG=debug determinate-nixd --flakehub-api-addr "${FLAKEHUB_PUSH_HOST}" login token --token-file "/tmp/semaphore-token"
             
