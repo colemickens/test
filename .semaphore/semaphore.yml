@@ -33,6 +33,8 @@ blocks:
           - sudo mkdir -p /etc/systemd/system/nix-daemon.service.d
           - printf "[Service]\nExecStart=@/usr/local/bin/determinate-nixd determinate-nixd daemon --flakehub-api-server ${FLAKEHUB_PUSH_HOST}" | sudo tee /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
 
+          - cat  /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
+
           - sudo systemctl daemon-reload
           - sleep 2
           - sudo systemctl daemon-reload
