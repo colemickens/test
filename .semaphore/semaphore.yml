@@ -40,6 +40,6 @@ blocks:
           - sudo systemctl daemon-reload
           - sudo systemctl cat nix-daemon.service --no-pager
           - sudo systemctl restart nix-daemon || true
-          - sudo systemctl status nix-daemon.service
+          - sudo systemctl status nix-daemon.service --no-pager
           - determinate-nixd login token --token-file "/tmp/semaphore-token"
             
