@@ -29,9 +29,11 @@ blocks:
           - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
           - systemctl cat nix-daemon.service
-          - exit -1
 
-          - echo "[Service]\n" > /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
+          - echo "[Service]\nExecStart=@/usr/local/bin/determinate-nixd determinate-nixd daemon --flakehub-api-server ${FLAKEHUB_PUSH_HOST}" > /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
 
+          - systemctl daemon-reload
+          - systemctl cat nix-daemon.service
+          - systemctl restart nix-daemon
           - determinate-nixd login token --token-file "/tmp/semaphore-token"
             
