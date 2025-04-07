@@ -28,10 +28,10 @@ blocks:
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
           - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
-          - systemctl cat determinate-nixd.service
+          - systemctl cat nix-daemon.service
           - exit -1
 
-          - echo "[Service]\n" > /etc/systemd/system/determinate-nixd.service.d/override-flakehub-api-addr.conf
+          - echo "[Service]\n" > /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
 
           - determinate-nixd login token --token-file "/tmp/semaphore-token"
             
