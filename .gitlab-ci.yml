@@ -16,8 +16,8 @@ super-cool-nix-job:
   - mkdir -p "${TMPDIR}"
 
   # pre-login with netrc
-  - echo "machine ${FLAKEHUB_WEB_ENDPOINT} login flakehub password ${GITLAB_JWT_ID_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
-  - echo "machine ${FLAKEHUB_API_ENDPOINT} login flakehub password ${GITLAB_JWT_ID_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
+  - echo "machine ${FLAKEHUB_WEB_ENDPOINT} login flakehub password ${SEMAPHORE_OIDC_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
+  - echo "machine ${FLAKEHUB_API_ENDPOINT} login flakehub password ${SEMAPHORE_OIDC_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
   - echo "netrc-file = ${NIX_INSTALLER_NETRC}" > "${NIX_INSTALLER_EXTRA_CONF}"
 
   # install-nix:

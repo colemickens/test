@@ -10,6 +10,22 @@ blocks:
     task:
       jobs:
         - name: 'Job #1'
-          commands:
-            - echo "hello, world!"
-            - echo "add as many commands as yo"
+          commands: |
+            export FLAKEHUB_PUSH_HOST="https://api.cluster-activate-exited.ngrok-free.app/"
+            export FLAKEHUB_WEB_ENDPOINT="https://web.cluster-activate-exited.ngrok-free.app"
+            export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
+            export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
+            export NIX_INSTALLER_EXTRA_CONF="~/cache/flakehub-extra-conf"
+            export NIX_INSTALLER_NETRC="~/cache/nix-netrc"
+
+            echo "machine ${FLAKEHUB_WEB_ENDPOINT} login flakehub password ${SEMAPHORE_OIDC_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
+            echo "machine ${FLAKEHUB_API_ENDPOINT} login flakehub password ${SEMAPHORE_OIDC_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
+            echo "netrc-file = ${NIX_INSTALLER_NETRC}" > "${NIX_INSTALLER_EXTRA_CONF}"
+
+            echo "${SEMAPHORE_OIDC_TOKEN}" > /tmp/semaphore-token
+
+            curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --no-confirm --init none
+            . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+
+            determinate-nixd login token --token-file "/tmp/semaphore-token"
+            
