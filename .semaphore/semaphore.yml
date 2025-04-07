@@ -38,8 +38,8 @@ blocks:
           - sudo systemctl daemon-reload
           - sleep 2
           - sudo systemctl daemon-reload
-          - sudo systemctl cat nix-daemon.service --no-pager
+          - sudo env PAGER=cat systemctl cat nix-daemon.service
           - sudo systemctl restart nix-daemon || true
-          - sudo systemctl status nix-daemon.service --no-pager
+          - sudo env PAGER=cat systemctl status nix-daemon.service
           - determinate-nixd login token --token-file "/tmp/semaphore-token"
             
