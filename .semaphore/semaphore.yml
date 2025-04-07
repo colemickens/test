@@ -44,4 +44,4 @@ blocks:
 
           - echo "TODO why does this use api-addr from here? daemon is what logs in"
           - RUST_LOG=debug determinate-nixd --flakehub-api-addr "${FLAKEHUB_PUSH_HOST}" login token --token-file "/tmp/semaphore-token" || true
-          - env PAGER=cat journalctl -u nix-daemon.service
+          - sudo env PAGER=cat journalctl -u nix-daemon.service
