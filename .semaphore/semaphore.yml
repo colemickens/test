@@ -41,5 +41,5 @@ blocks:
           - sudo env PAGER=cat systemctl cat nix-daemon.service
           - sudo systemctl restart nix-daemon || true
           - sudo env PAGER=cat systemctl status nix-daemon.service
-          - determinate-nixd login token --token-file "/tmp/semaphore-token"
+          - RUST_LOG=debug determinate-nixd login token --token-file "/tmp/semaphore-token"
             
