@@ -12,4 +12,4 @@ blocks:
         - name: 'Job #1'
           commands:
             - echo "hello, world!"'
-            - echo "add as many commands as yo
+            - echo "add as many commands as yo"
