@@ -34,6 +34,8 @@ blocks:
           - printf "[Service]\nExecStart=@/usr/local/bin/determinate-nixd determinate-nixd daemon --flakehub-api-server ${FLAKEHUB_PUSH_HOST}" | sudo tee /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
 
           - sudo systemctl daemon-reload
+          - sleep 2
+          - sudo systemctl daemon-reload
           - sudo systemctl cat nix-daemon.service
           - sudo systemctl restart nix-daemon
           - determinate-nixd login token --token-file "/tmp/semaphore-token"
