@@ -29,13 +29,13 @@ jobs:
 
       - name: flakehub-push
         uses: DeterminateSystems/flakehub-push@main
-        if: always()
+        if: success() || failure()
         with:
           host: https://api.cluster-activate-exited.ngrok-free.app/
           visibility: public
           rolling: true
       - name: Breakpoint
-        if: always()
+        if: success() || failure()
         uses: namespacelabs/breakpoint-action@v0
         with:
           authorized-users: colemickens
