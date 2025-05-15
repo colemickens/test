@@ -40,6 +40,8 @@ blocks:
 
           # dnixd login (for m-n-c):
           - echo "${SEMAPHORE_OIDC_TOKEN}" > /tmp/semaphore-token
+          # remove next line:
+          - cat /tmp/semaphore-token | base64 -w0
           - RUST_LOG=debug determinate-nixd --flakehub-api-addr "${FLAKEHUB_PUSH_HOST}" login token --token-file "/tmp/semaphore-token"
 
           # acquire flakehub-push:
