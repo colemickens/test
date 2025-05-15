@@ -38,18 +38,18 @@ blocks:
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
           - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
-          # login with `determinate-nixd login` (used by magic-nix-cache, substitutions)
-          - echo "${SEMAPHORE_OIDC_TOKEN}" | determinate-nixd login token --token-file /dev/stdin
-
-          # stage login credentials for flakehub-push
-          - export FLAKEHUB_PUSH_OIDC_TOKEN="${SEMAPHORE_OIDC_TOKEN}"
-
           # debug only:
           - sudo systemctl set-environment FLAKEHUB_API_ADDR="${FLAKEHUB_API_ADDR}"
           - sudo systemctl set-environment FLAKEHUB_FRONTEND_ADDR="${FLAKEHUB_FRONTEND_ADDR}"
           - sudo systemctl set-environment FLAKEHUB_CACHE_ADDR="${FLAKEHUB_CACHE_ADDR}"
           - sudo systemctl daemon-reload
           - sudo systemctl restart nix-daemon
+
+          # login with `determinate-nixd login` (used by magic-nix-cache, substitutions)
+          - echo "${SEMAPHORE_OIDC_TOKEN}" | determinate-nixd login token --token-file /dev/stdin
+
+          # stage login credentials for flakehub-push
+          - export FLAKEHUB_PUSH_OIDC_TOKEN="${SEMAPHORE_OIDC_TOKEN}"
 
           # test publishing a rolling release
           # TODO: file ticket to see why --repository is really needed here.....? it's not for mnc? (right?)
