@@ -15,7 +15,6 @@ blocks:
           - export FLAKEHUB_PUSH_HOST="https://api.cluster-activate-exited.ngrok-free.app/"
           - export FLAKEHUB_WEB_ENDPOINT="https://web.cluster-activate-exited.ngrok-free.app"
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
-          - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
           - export NIX_INSTALLER_EXTRA_CONF="/home/semaphore/cache/flakehub-extra-conf"
           - export NIX_INSTALLER_NETRC="/home/semaphore/cache/nix-netrc"
 
@@ -23,23 +22,30 @@ blocks:
           - echo "machine ${FLAKEHUB_API_ENDPOINT} login flakehub password ${SEMAPHORE_OIDC_TOKEN}" >> "${NIX_INSTALLER_NETRC}"
           - echo "netrc-file = ${NIX_INSTALLER_NETRC}" > "${NIX_INSTALLER_EXTRA_CONF}"
 
-          - echo "${SEMAPHORE_OIDC_TOKEN}" > /tmp/semaphore-token
-          - cat /tmp/semaphore-token | base64 -w 0
-
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
           - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
-          - systemctl cat nix-daemon.service
+          - export FLAKEHUB_PUSH_OIDC_TOKEN="${SEMAPHORE_OIDC_TOKEN}"
 
+          # todo: remove:
+          - echo "${FLAKEHUB_PUSH_OIDC_TOKEN}" | base64 -w0
+
+          # temp, for demo only:
           - sudo mkdir -p /etc/systemd/system/nix-daemon.service.d
           - printf "\n[Service]\nExecStart=\nExecStart=@/usr/local/bin/determinate-nixd determinate-nixd --flakehub-api-addr \"${FLAKEHUB_PUSH_HOST}\" daemon" | sudo tee /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
 
-          - cat  /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
+          # - cat  /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
 
-          - sudo systemctl daemon-reload
-          - sudo env PAGER=cat systemctl cat nix-daemon.service
+          # - sudo systemctl daemon-reload
+          # - sudo env PAGER=cat systemctl cat nix-daemon.service
           - sudo systemctl restart nix-daemon || true
-          - sudo env PAGER=cat systemctl status nix-daemon.service
+          # - sudo env PAGER=cat systemctl status nix-daemon.service
 
-          - RUST_LOG=debug determinate-nixd --flakehub-api-addr "${FLAKEHUB_PUSH_HOST}" login token --token-file "/tmp/semaphore-token" || true
+          - RUST_LOG=debug determinate-nixd --flakehub-api-addr "${FLAKEHUB_PUSH_HOST}" login token --token-file "/tmp/semaphore-token"
+
+          - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" -O /tmp/flakehub-push
+          - chmod +x /tmp/flakehub-push
+          - /tmp/flakehub-push
+
+          # temp, for demo only:
           - sudo env PAGER=cat journalctl -u nix-daemon.service
