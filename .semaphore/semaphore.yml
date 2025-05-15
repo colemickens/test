@@ -27,9 +27,6 @@ blocks:
 
           - export FLAKEHUB_PUSH_OIDC_TOKEN="${SEMAPHORE_OIDC_TOKEN}"
 
-          # todo: remove:
-          - echo "${FLAKEHUB_PUSH_OIDC_TOKEN}" | base64 -w0
-
           # temp, for demo only:
           - sudo mkdir -p /etc/systemd/system/nix-daemon.service.d
           - printf "\n[Service]\nExecStart=\nExecStart=@/usr/local/bin/determinate-nixd determinate-nixd --flakehub-api-addr \"${FLAKEHUB_PUSH_HOST}\" daemon" | sudo tee /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
