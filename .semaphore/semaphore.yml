@@ -41,8 +41,11 @@ blocks:
           - sudo systemctl restart nix-daemon || true
           # - sudo env PAGER=cat systemctl status nix-daemon.service
 
+          # dnixd login (for m-n-c):
+          - echo "${SEMAPHORE_OIDC_TOKEN}" > /tmp/semaphore-token
           - RUST_LOG=debug determinate-nixd --flakehub-api-addr "${FLAKEHUB_PUSH_HOST}" login token --token-file "/tmp/semaphore-token"
 
+          # acquire flakehub-push:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" -O /tmp/flakehub-push
           - chmod +x /tmp/flakehub-push
           - /tmp/flakehub-push
