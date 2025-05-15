@@ -16,6 +16,8 @@ blocks:
       jobs:
         - name: 'Job #1'
           commands:
+          - ls
+          - exit 1
           - mkdir /home/semaphore/cache
           - export FLAKEHUB_PUSH_HOST="https://api.cluster-activate-exited.ngrok-free.app/"
           - export FLAKEHUB_WEB_ENDPOINT="https://web.cluster-activate-exited.ngrok-free.app"
