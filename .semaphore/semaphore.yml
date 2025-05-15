@@ -56,4 +56,7 @@ blocks:
           # TODO: file ticket to see why --repository is really needed here.....? it's not for mnc? (right?)
           - export FLAKE_OWNER="$(echo "${SEMAPHORE_ORGANIZATION_URL}" | cut -d "." -f1 | cut -d '/' -f3)" # TODO: semaphore, this is just silly :|
           - export FLAKE_NAME="${SEMAPHORE_PROJECT_NAME}"
-          - flakehub-push --repository '${FLAKE_OWNER}/${FLAKE_NAME}' --rolling --rolling-minor 1 --visibility private
+          - flakehub-push --repository "${FLAKE_OWNER}/${FLAKE_NAME}" --rolling --rolling-minor 1 --visibility private
+
+          # test magic-nix-cache
+          - echo "foo"
