@@ -16,6 +16,7 @@ blocks:
       jobs:
         - name: 'Job #1'
           commands:
+          - export FLAKEHUB_PUSH_REPOSITORY="$(echo "${SEMAPHORE_ORGANIZATION_URL}" | cut -d "." -f1 | cut -d '/' -f3)/${SEMAPHORE_PROJECT_NAME}"
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
           - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/magic-nix-cache/branch/main/X64-Linux?ci=semaphore"
 
@@ -24,6 +25,7 @@ blocks:
           - export FLAKEHUB_FRONTEND_ADDR="https://web.cluster-activate-exited.ngrok-free.app/"
           - export FLAKEHUB_CACHE_ADDR="https://cache.cluster-activate-exited.ngrok-free.app/"
           - export FLAKEHUB_PUSH_HOST="${FLAKEHUB_API_ADDR}"
+          - export FLAKEHUB_PUSH_REPOSITORY="DeterminateSystems/test" # local debug, change for test in prod
           # debug only:
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
           - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
@@ -53,10 +55,14 @@ blocks:
           - export FLAKEHUB_PUSH_OIDC_TOKEN="${SEMAPHORE_OIDC_TOKEN}"
 
           # test publishing a rolling release
-          # TODO: file ticket to see why --repository is really needed here.....? it's not for mnc? (right?)
-          - export FLAKE_OWNER="$(echo "${SEMAPHORE_ORGANIZATION_URL}" | cut -d "." -f1 | cut -d '/' -f3)" # TODO: semaphore, this is just silly :|
-          - export FLAKE_NAME="${SEMAPHORE_PROJECT_NAME}"
-          - flakehub-push --repository "${FLAKE_OWNER}/${FLAKE_NAME}" --rolling --rolling-minor 1 --visibility private
+          # TODO: file ticket to see why --repository / FLAKEHUB_PUSH_REPOSITORY is really needed here.....? it's not for mnc? (right?)
+          - flakehub-push --rolling --rolling-minor 1 --visibility private
 
           # test magic-nix-cache
-          - echo "foo"
+          - magic-nix-cache --use-flakehub || true
+          - export DRV="$(nix eval .packages.x86_64-linux.default.drvPath)"
+          - export OUT="$(nix eval .packages.x86_64-linux.default.outPath)"
+          - nix build "${DRV}^*" --no-out-link
+          - sleep 10 # wait on mnc, I guess
+          - nix store delete "${OUT}"
+          - nix build -j0 "${OUT}" --option narinfo-cache-negative-ttl 0
