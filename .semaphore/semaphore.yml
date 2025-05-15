@@ -30,14 +30,9 @@ blocks:
           # temp, for demo only:
           - sudo mkdir -p /etc/systemd/system/nix-daemon.service.d
           - printf "\n[Service]\nExecStart=\nExecStart=@/usr/local/bin/determinate-nixd determinate-nixd --flakehub-api-addr \"${FLAKEHUB_PUSH_HOST}\" daemon" | sudo tee /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
-
-          # - cat  /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
-
-          # - sudo systemctl daemon-reload
-          # - sudo env PAGER=cat systemctl cat nix-daemon.service
+          - sudo systemctl daemon-reload
           - sudo systemctl restart nix-daemon || true
-          # - sudo env PAGER=cat systemctl status nix-daemon.service
-
+          
           # dnixd login (for m-n-c):
           - echo "${SEMAPHORE_OIDC_TOKEN}" > /tmp/semaphore-token
           # remove next line:
