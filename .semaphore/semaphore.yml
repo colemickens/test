@@ -28,10 +28,10 @@ blocks:
           - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
 
           # acquire `flakehub-push`:
-          - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" -o /usr/bin/flakehub-push
+          - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
           - chmod +x /usr/bin/flakehub-push
           # acquire `magic-nix-cache`:
-          - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" -o /usr/bin/magic-nix-cache
+          - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | sudo tee /usr/bin/magic-nix-cache &>/dev/null
           - chmod +x /usr/bin/magic-nix-cache
 
           # install determinate nix
