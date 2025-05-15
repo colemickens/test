@@ -34,6 +34,7 @@ jobs:
           host: https://api.cluster-activate-exited.ngrok-free.app/
           visibility: public
           rolling: true
+
       - name: Breakpoint
         if: success() || failure()
         uses: namespacelabs/breakpoint-action@v0
