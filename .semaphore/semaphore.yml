@@ -29,10 +29,10 @@ blocks:
 
           # acquire `flakehub-push`:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
-          - chmod +x /usr/bin/flakehub-push
+          - sudo chmod +x /usr/bin/flakehub-push
           # acquire `magic-nix-cache`:
           - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | sudo tee /usr/bin/magic-nix-cache &>/dev/null
-          - chmod +x /usr/bin/magic-nix-cache
+          - sudo chmod +x /usr/bin/magic-nix-cache
 
           # install determinate nix
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
