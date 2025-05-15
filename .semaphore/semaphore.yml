@@ -32,7 +32,7 @@ blocks:
           - printf "\n[Service]\nExecStart=\nExecStart=@/usr/local/bin/determinate-nixd determinate-nixd --flakehub-api-addr \"${FLAKEHUB_PUSH_HOST}\" daemon" | sudo tee /etc/systemd/system/nix-daemon.service.d/override-flakehub-api-addr.conf
           - sudo systemctl daemon-reload
           - sudo systemctl restart nix-daemon || true
-          
+
           # dnixd login (for m-n-c):
           - echo "${SEMAPHORE_OIDC_TOKEN}" > /tmp/semaphore-token
           # remove next line:
@@ -40,6 +40,7 @@ blocks:
           - RUST_LOG=debug determinate-nixd --flakehub-api-addr "${FLAKEHUB_PUSH_HOST}" login token --token-file "/tmp/semaphore-token"
 
           # acquire flakehub-push:
+          - echo "${FLAKEHUB_PUSH_BINARY_URL}"
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" -O /tmp/flakehub-push
           - chmod +x /tmp/flakehub-push
           - /tmp/flakehub-push
