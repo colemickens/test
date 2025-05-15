@@ -41,7 +41,7 @@ blocks:
 
           # acquire flakehub-push:
           - echo "${FLAKEHUB_PUSH_BINARY_URL}"
-          - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" -O /tmp/flakehub-push
+          - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" -o /tmp/flakehub-push
           - chmod +x /tmp/flakehub-push
           - /tmp/flakehub-push
 
