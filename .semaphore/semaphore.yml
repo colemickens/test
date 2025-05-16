@@ -30,14 +30,13 @@ blocks:
           - export FLAKEHUB_PUSH_ROLLING_MINOR="$(date '+%s')"
           # debug only:
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
-          # - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
+          # - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/magic-nix-cache/rev/638e41742b9b3ccc53eaaf0fc6b4d5318936fb31/X64-Linux"
 
           # acquire `flakehub-push`:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
           - sudo chmod +x /usr/bin/flakehub-push
           # acquire `magic-nix-cache`:
-          - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | sudo tee /usr/bin/magic-nix-cache &>/dev/null
-          - sudo chmod +x /usr/bin/magic-nix-cache
+          - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | xz -d | sudo nix-store --import"
           # acquire `fh`:
           - curl -L "${FH_BINARY_URL}" | sudo tee /usr/bin/fh &>/dev/null
           - sudo chmod +x /usr/bin/fh
@@ -71,12 +70,6 @@ blocks:
           #- flakehub-push --rolling --visibility private --include-output-paths
 
           # test magic-nix-cache
-          - which magic-nix-cache
-          - sha256sum "$(which magic-nix-cache)"
-          - sha256sum "$(which flakehub-push)"
-          - |
-            magic-nix-cache \
-              --help
           - |
             magic-nix-cache \
               --flakehub-api-server="${FLAKEHUB_API_ADDR}" \
