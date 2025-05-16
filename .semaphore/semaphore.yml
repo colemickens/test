@@ -56,6 +56,7 @@ blocks:
 
           # test publishing a rolling release
           # TODO: file ticket to see why --repository / FLAKEHUB_PUSH_REPOSITORY is really needed here.....? it's not for mnc? (right?)
+          # TODO: why did this let me rolling release and and then suddenly stop:
           - flakehub-push --rolling --rolling-minor 1 --visibility private
 
           # test magic-nix-cache
