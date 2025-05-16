@@ -42,10 +42,10 @@ blocks:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
           - sudo chmod +x /usr/bin/flakehub-push
           # acquire `magic-nix-cache`:
-          - export MNC_CLSR="$(curl -L "${MAGIC_NIX_CACHE_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import > /tmp/mnc-import | tail -n1 | head -n1)"
+          - export MNC_CLSR="$(curl -L "${MAGIC_NIX_CACHE_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import | tail -n1 | head -n1)"
           - sudo ln -sf "${MNC_CLSR}/bin/magic-nix-cache" /usr/bin/magic-nix-cache
           # acquire `fh`:
-          - export FH_CLSR="$(curl -L "${FH_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import > /tmp/mnc-import | tail -n1 | head -n1)"
+          - export FH_CLSR="$(curl -L "${FH_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import | tail -n1 | head -n1)"
           - sudo ln -sf "${FH_CLSR}/bin/fh" /usr/bin/fh
 
           # debug only:
