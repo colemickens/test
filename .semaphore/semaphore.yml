@@ -34,6 +34,10 @@ blocks:
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
           # - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/magic-nix-cache/rev/638e41742b9b3ccc53eaaf0fc6b4d5318936fb31/X64-Linux"
 
+          # install determinate nix
+          - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
+          - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
+
           # acquire `flakehub-push`:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
           - sudo chmod +x /usr/bin/flakehub-push
@@ -42,10 +46,6 @@ blocks:
           # acquire `fh`:
           - curl -L "${FH_BINARY_URL}" | sudo tee /usr/bin/fh &>/dev/null
           - sudo chmod +x /usr/bin/fh
-
-          # install determinate nix
-          - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
-          - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
           # debug only:
           - sudo systemctl set-environment FLAKEHUB_API_ADDR="${FLAKEHUB_API_ADDR}"
