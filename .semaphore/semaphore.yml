@@ -72,10 +72,14 @@ blocks:
 
           # delete path 
           - export RESULT="$(readlink -f ./result)"
-          - echo "${RESULT}"
+          - export RESULT_RAND_EXPECTED="$(cat ./result)"
+          - echo "RESULT=${RESULT}"
+          - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
           - rm ./result*
-          - ls -al
-          - nix store delete "${RESULT}" --ignore-liveness
+          - sudo nix store delete "${RESULT}" --ignore-liveness
 
           - export RESOLVED_OUT="$(fh resolve github:colemickens/test#packages.x86_64-linux.default)"
           - nix build -j0 "${RESOLVED_OUT}"
+          - export RESULT_RAND_ACTUAL="$(cat ./result)"
+          - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
+          - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
