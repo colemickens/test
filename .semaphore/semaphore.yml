@@ -76,7 +76,7 @@ blocks:
           - echo "RESULT=${RESULT}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
           - rm ./result*
-          - sudo nix store delete "${RESULT}" --ignore-liveness
+          - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
 
           - export RESOLVED_OUT="$(fh resolve github:colemickens/test#packages.x86_64-linux.default)"
           - nix build -j0 "${RESOLVED_OUT}"
