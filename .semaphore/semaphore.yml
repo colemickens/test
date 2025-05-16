@@ -80,9 +80,15 @@ blocks:
           - rm ./result*
           - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
 
+          # DEBUG: why are we not authed to flakehub cache???
+          - sudo cat /etc/nix/nix.conf
+          - sudo ls -al /nix/var/determinate
+          - sudo cat /nix/var/determinate/token
+          - sudo cat /nix/var/determinate/netrc
+
           # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
           #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test#packages.x86_64-linux.default")"
-          - nix build -j0 "${RESULT}"
+          - nix build -j0 "${RESULT}" --option narinfo-cache-negative-ttl 0
           - export RESULT_RAND_ACTUAL="$(cat ./result)"
           - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
