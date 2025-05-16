@@ -36,7 +36,7 @@ blocks:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
           - sudo chmod +x /usr/bin/flakehub-push
           # acquire `magic-nix-cache`:
-          - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | xz -d | sudo nix-store --import"
+          - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | xz -d | sudo nix-store --import
           # acquire `fh`:
           - curl -L "${FH_BINARY_URL}" | sudo tee /usr/bin/fh &>/dev/null
           - sudo chmod +x /usr/bin/fh
