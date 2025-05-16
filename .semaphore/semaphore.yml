@@ -30,7 +30,7 @@ blocks:
           - export FLAKEHUB_PUSH_ROLLING_MINOR="$(date '+%s')"
           # debug only:
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
-          - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
+          # - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
 
           # acquire `flakehub-push`:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
