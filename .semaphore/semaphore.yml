@@ -67,7 +67,11 @@ blocks:
           - flakehub-push --rolling --visibility private --include-output-paths
 
           # test magic-nix-cache
-          - magic-nix-cache --use-flakehub || true
+          - |
+            magic-nix-cache \
+              --flakehub-api-server="${FLAKEHUB_API_ADDR}" \
+              --flakehub-cache-server="${FLAKEHUB_CACHE_ADDR}" \
+              --flakehub-flake-name="${FLAKEHUB_PUSH_REPOSITORY}"
           - nix build '.#packages.x86_64-linux.default'
           
           - sleep 10 # wait on mnc, I guess
