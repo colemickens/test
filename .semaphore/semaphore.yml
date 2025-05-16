@@ -71,6 +71,9 @@ blocks:
           #- flakehub-push --rolling --visibility private --include-output-paths
 
           # test magic-nix-cache
+          - which magic-nix-cache
+          - sha256sum "$(which magic-nix-cache)"
+          - sha256sum "$(which flakehub-push)"
           - |
             magic-nix-cache \
               --help
