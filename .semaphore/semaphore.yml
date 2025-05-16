@@ -73,6 +73,7 @@ blocks:
           # delete path 
           - export RESULT="$(readlink -f ./result)"
           - rm ./result*
+          - ls -al
           - nix store delete "${RESULT}"
 
           - export RESOLVED_OUT="$(fh resolve github:colemickens/test#packages.x86_64-linux.default)"
