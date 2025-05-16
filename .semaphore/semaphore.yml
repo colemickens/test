@@ -44,7 +44,7 @@ blocks:
           # acquire `magic-nix-cache`:
           - export MNC_OUT="$(curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | xz -d | sudo "$(which nix-store)" --import)"
           - echo $MNC_OUT
-          - export MNC_OUT=$(cat "${MNC_OUT}" | tail -n3)"
+          - export MNC_OUT="$(cat "${MNC_OUT}" | tail -n3)"
           - echo $MNC_OUT
           - sudo ln -sf "${MNC_OUT}/bin/magic-nix-cache" /usr/bin/magic-nix-cache
           # acquire `fh`:
