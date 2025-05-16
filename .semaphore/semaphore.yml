@@ -38,6 +38,8 @@ blocks:
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
           - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
+          # TODO: when cache access works in prod, this can probably just fetch from fh:
+          
           # acquire `flakehub-push`:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
           - sudo chmod +x /usr/bin/flakehub-push
@@ -86,15 +88,15 @@ blocks:
           - rm ./result*
           - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
 
-          # DEBUG: why are we not authed to flakehub cache???
-          - sudo cat /etc/nix/nix.conf
-          - sudo ls -al /nix/var/determinate
-          - sudo cat /nix/var/determinate/token
-          - sudo cat /nix/var/determinate/netrc
-
           # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
           #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default")"
-          - nix build -j0 "${RESULT}" --option narinfo-cache-negative-ttl 0
-          - export RESULT_RAND_ACTUAL="$(cat ./result)"
+          - |
+            sudo nix copy \
+              --from "${FLAKEHUB_CACHE_ADDR}" \
+              -j0 \
+              --no-check-sigs \
+              --option narinfo-cache-negative-ttl 0 \
+                "${RESULT}"
+          - export RESULT_RAND_ACTUAL="$(cat "${RESULT}")"
           - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
