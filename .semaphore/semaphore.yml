@@ -18,6 +18,7 @@ blocks:
           commands:
           - export FLAKEHUB_PUSH_REPOSITORY="$(echo "${SEMAPHORE_ORGANIZATION_URL}" | cut -d "." -f1 | cut -d '/' -f3)/${SEMAPHORE_PROJECT_NAME}"
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
+          - export FH_BINARY_URL="https://install.determinate.systems/fh/branch/main/X64-Linux?ci=semaphore"
           - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/magic-nix-cache/branch/main/X64-Linux?ci=semaphore"
 
           # debug only:
@@ -36,6 +37,9 @@ blocks:
           # acquire `magic-nix-cache`:
           - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | sudo tee /usr/bin/magic-nix-cache &>/dev/null
           - sudo chmod +x /usr/bin/magic-nix-cache
+          # acquire `fh`:
+          - curl -L "${FH_BINARY_URL}" | sudo tee /usr/bin/fh &>/dev/null
+          - sudo chmod +x /usr/bin/fh
 
           # install determinate nix
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
@@ -57,13 +61,19 @@ blocks:
           # test publishing a rolling release
           # TODO: file ticket to see why --repository / FLAKEHUB_PUSH_REPOSITORY is really needed here.....? it's not for mnc? (right?)
           # TODO: why did this let me rolling release and and then suddenly stop:
-          - flakehub-push --rolling --rolling-minor 1 --visibility private
+          # -- does it like only go to 50? it stopped at 0.1.50
+          - flakehub-push --rolling --rolling-minor 2 --visibility private --include-output-paths
 
           # test magic-nix-cache
           - magic-nix-cache --use-flakehub || true
-          - export DRV="$(nix eval .packages.x86_64-linux.default.drvPath)"
-          - export OUT="$(nix eval .packages.x86_64-linux.default.outPath)"
-          - nix build "${DRV}^*" --no-out-link
+          - nix build '.#packages.x86_64-linux.default'
+          
           - sleep 10 # wait on mnc, I guess
-          - nix store delete "${OUT}"
-          - nix build -j0 "${OUT}" --option narinfo-cache-negative-ttl 0
+
+          # delete path 
+          - export RESULT="$(readlink -f ./result)"
+          - rm ./result*
+          - nix store delete "${RESULT}"
+
+          - export RESOLVED_OUT="$(fh resolve github:colemickens/test#packages.x86_64-linux.default)"
+          - nix build -j0 "${RESOLVED_OUT}"
