@@ -27,6 +27,7 @@ blocks:
           - export FLAKEHUB_CACHE_ADDR="https://cache.cluster-activate-exited.ngrok-free.app/"
           - export FLAKEHUB_PUSH_HOST="${FLAKEHUB_API_ADDR}"
           - export FLAKEHUB_PUSH_REPOSITORY="DeterminateSystems/test" # local debug, change for test in prod
+          - export FLAKEHUB_PUSH_ROLLING_MINOR="$(date '+%s')"
           # debug only:
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
           - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
@@ -62,7 +63,8 @@ blocks:
           # TODO: file ticket to see why --repository / FLAKEHUB_PUSH_REPOSITORY is really needed here.....? it's not for mnc? (right?)
           # TODO: why did this let me rolling release and and then suddenly stop:
           # -- does it like only go to 50? it stopped at 0.1.50
-          - flakehub-push --rolling --rolling-minor $(date '+%s') --visibility private --include-output-paths
+          # - note, now it uses FLAKEHUB_PUSH_ROLLING_MINOR which is unix timestamp each run
+          - flakehub-push --rolling --visibility private --include-output-paths
 
           # test magic-nix-cache
           - magic-nix-cache --use-flakehub || true
@@ -78,8 +80,9 @@ blocks:
           - rm ./result*
           - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
 
-          - export RESOLVED_OUT="$(fh resolve github:colemickens/test#packages.x86_64-linux.default)"
-          - nix build -j0 "${RESOLVED_OUT}"
+          # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
+          #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test#packages.x86_64-linux.default")"
+          - nix build -j0 "${RESULT}"
           - export RESULT_RAND_ACTUAL="$(cat ./result)"
           - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
