@@ -20,8 +20,8 @@ blocks:
           commands:
           - export FLAKEHUB_PUSH_REPOSITORY="$(echo "${SEMAPHORE_ORGANIZATION_URL}" | cut -d "." -f1 | cut -d '/' -f3)/${SEMAPHORE_PROJECT_NAME}"
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
-          - export FH_BINARY_URL="https://install.determinate.systems/fh/branch/main/X64-Linux?ci=semaphore"
-          - export MAGIC_NIX_CACHE_BINARY_URL="https://install.determinate.systems/magic-nix-cache-closure/branch/main/X64-Linux?ci=semaphore"
+          - export FH_CLOSURE_URL="https://install.determinate.systems/fh/branch/main/X64-Linux?ci=semaphore"
+          - export MAGIC_NIX_CACHE_CLOSURE_URL="https://install.determinate.systems/magic-nix-cache-closure/branch/main/X64-Linux?ci=semaphore"
 
           # debug only:
           - export FLAKEHUB_API_ADDR="https://api.cluster-activate-exited.ngrok-free.app/"
@@ -42,14 +42,11 @@ blocks:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
           - sudo chmod +x /usr/bin/flakehub-push
           # acquire `magic-nix-cache`:
-          - curl -L "${MAGIC_NIX_CACHE_BINARY_URL}" | xz -d | sudo "$(which nix-store)" --import > /tmp/mnc-import
-          - export MNC_OUT="$(cat /tmp/mnc-import | tail -n1 | head -n1)"
-          - sudo ln -sf "${MNC_OUT}/bin/magic-nix-cache" /usr/bin/magic-nix-cache
-          - readlink -f "$(which magic-nix-cache)"
-          - ls -al "$(readlink -f "$(which magic-nix-cache)")"
+          - export MNC_CLSR="$(curl -L "${MAGIC_NIX_CACHE_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import > /tmp/mnc-import | tail -n1 | head -n1)"
+          - sudo ln -sf "${MNC_CLSR}/bin/magic-nix-cache" /usr/bin/magic-nix-cache
           # acquire `fh`:
-          - curl -L "${FH_BINARY_URL}" | sudo tee /usr/bin/fh &>/dev/null
-          - sudo chmod +x /usr/bin/fh
+          - export FH_CLSR="$(curl -L "${FH_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import > /tmp/mnc-import | tail -n1 | head -n1)"
+          - sudo ln -sf "${FH_CLSR}/bin/magic-nix-cache" /usr/bin/magic-nix-cache
 
           # debug only:
           - sudo systemctl set-environment FLAKEHUB_API_ADDR="${FLAKEHUB_API_ADDR}"
@@ -69,11 +66,7 @@ blocks:
           # TODO: why did this let me rolling release and and then suddenly stop:
           # -- does it like only go to 50? it stopped at 0.1.50
           # - note, now it uses FLAKEHUB_PUSH_ROLLING_MINOR which is unix timestamp each run
-          
-          
-          
-          #############
-          #- flakehub-push --rolling --visibility private --include-output-paths
+          - flakehub-push --rolling --visibility private --include-output-paths
 
           # test magic-nix-cache
           - |
