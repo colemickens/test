@@ -62,7 +62,7 @@ blocks:
           # TODO: file ticket to see why --repository / FLAKEHUB_PUSH_REPOSITORY is really needed here.....? it's not for mnc? (right?)
           # TODO: why did this let me rolling release and and then suddenly stop:
           # -- does it like only go to 50? it stopped at 0.1.50
-          - flakehub-push --rolling --rolling-minor 2 --visibility private --include-output-paths
+          - flakehub-push --rolling --rolling-minor $(date '+%s') --visibility private --include-output-paths
 
           # test magic-nix-cache
           - magic-nix-cache --use-flakehub || true
