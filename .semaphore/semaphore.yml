@@ -89,8 +89,9 @@ blocks:
           - echo "RESULT=${RESULT}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
           - rm ./result*
-          # - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
-          - sudo nix store delete "${RESULT}" --ignore-liveness
+          - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
+          # TODO: still doens't work on 24.04:
+          # - sudo nix store delete "${RESULT}" --ignore-liveness
 
           # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
           #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default")"
