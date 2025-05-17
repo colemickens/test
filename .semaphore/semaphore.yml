@@ -88,7 +88,7 @@ blocks:
           # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
           #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default")"
           - |
-            sudo nix copy \
+            sudo "$(which nix)" copy \
               --from "${FLAKEHUB_CACHE_ADDR}" \
               -j0 \
               --no-check-sigs \
