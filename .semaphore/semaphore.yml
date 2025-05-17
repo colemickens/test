@@ -3,7 +3,7 @@ name: Initial Pipeline
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu2004
+    os_image: ubuntu2404
 blocks:
   - name: 'Block #1'
     dependencies: []
@@ -18,6 +18,9 @@ blocks:
       jobs:
         - name: 'Job #1'
           commands:
+          - cat /etc/lsb_release || true
+          - cat /etc/os-release || true
+          - env
           - export FLAKEHUB_PUSH_REPOSITORY="$(echo "${SEMAPHORE_ORGANIZATION_URL}" | cut -d "." -f1 | cut -d '/' -f3)/${SEMAPHORE_PROJECT_NAME}"
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
           - export FH_CLOSURE_URL="https://install.determinate.systems/fh/branch/main/X64-Linux?ci=semaphore"
