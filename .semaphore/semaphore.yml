@@ -96,13 +96,7 @@ blocks:
 
           # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
           #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default")"
-          - |
-            # sudo "$(which nix)" copy \
-            #   --from "${FLAKEHUB_CACHE_ADDR}" \
-            #   -j0 \
-            #   --no-check-sigs \
-            #   --option narinfo-cache-negative-ttl 0 \
-            #     "${RESULT}"
+          #- nix build -j0 "${RESULT}"
           # TODO: subs for hardcoded string here:
           - RUST_LOG=debug fh fetch "https://flakehub.com/f/DeterminateSystems/test-from-semaphore/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default" /tmp/result
           - export RESULT_RAND_ACTUAL="$(cat "${RESULT}")"
