@@ -45,9 +45,11 @@ blocks:
           # acquire `magic-nix-cache`:
           - export MNC_CLSR="$(curl -L "${MAGIC_NIX_CACHE_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import | tail -n1 | head -n1)"
           - sudo ln -sf "${MNC_CLSR}/bin/magic-nix-cache" /usr/bin/magic-nix-cache
+          - magic-nix-cache --version
           # acquire `fh`:
           - export FH_CLSR="$(curl -L "${FH_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import | tail -n1 | head -n1)"
           - sudo ln -sf "${FH_CLSR}/bin/fh" /usr/bin/fh
+          - fh version
 
           # debug only:
           # - sudo systemctl set-environment FLAKEHUB_API_ADDR="${FLAKEHUB_API_ADDR}"
