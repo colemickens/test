@@ -26,7 +26,7 @@ blocks:
           # debug only:
           # - export FLAKEHUB_API_ADDR="https://api.cluster-activate-exited.ngrok-free.app/"
           # - export FLAKEHUB_FRONTEND_ADDR="https://web.cluster-activate-exited.ngrok-free.app/"
-          # - export FLAKEHUB_CACHE_ADDR="https://cache.cluster-activate-exited.ngrok-free.app/"
+          # - export FLAKEHUB_CACHE_ADDR="https://cache.cluster-activate-exited.ngrok-free.app/" # TODO: `fh fetch` might not use this?
           # - export FLAKEHUB_PUSH_HOST="${FLAKEHUB_API_ADDR}"
           - export FLAKEHUB_PUSH_REPOSITORY="DeterminateSystems/test-from-semaphore"
           - export FLAKEHUB_PUSH_ROLLING_MINOR="$(date '+%s')"
@@ -88,12 +88,13 @@ blocks:
           # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
           #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default")"
           - |
-            sudo "$(which nix)" copy \
-              --from "${FLAKEHUB_CACHE_ADDR}" \
-              -j0 \
-              --no-check-sigs \
-              --option narinfo-cache-negative-ttl 0 \
-                "${RESULT}"
+            # sudo "$(which nix)" copy \
+            #   --from "${FLAKEHUB_CACHE_ADDR}" \
+            #   -j0 \
+            #   --no-check-sigs \
+            #   --option narinfo-cache-negative-ttl 0 \
+            #     "${RESULT}"
+          - fh fetch "${RESULT}"
           - export RESULT_RAND_ACTUAL="$(cat "${RESULT}")"
           - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
