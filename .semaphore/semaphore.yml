@@ -40,7 +40,8 @@ blocks:
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
           - . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
-          # TODO: when cache access works in prod, this can probably just fetch from fh:
+          # login with `determinate-nixd login` (used by magic-nix-cache, substitutions)
+          - echo "${SEMAPHORE_OIDC_TOKEN}" | determinate-nixd login token --token-file /dev/stdin
           
           # acquire `flakehub-push`:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
@@ -62,8 +63,6 @@ blocks:
           # - sudo systemctl daemon-reload
           # - sudo systemctl restart nix-daemon
 
-          # login with `determinate-nixd login` (used by magic-nix-cache, substitutions)
-          - echo "${SEMAPHORE_OIDC_TOKEN}" | determinate-nixd login token --token-file /dev/stdin
 
           # stage login credentials for flakehub-push
           - export FLAKEHUB_PUSH_OIDC_TOKEN="${SEMAPHORE_OIDC_TOKEN}"
