@@ -89,6 +89,7 @@ blocks:
           - echo "RESULT=${RESULT}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
           - rm ./result*
+          # - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
           - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
 
           # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
