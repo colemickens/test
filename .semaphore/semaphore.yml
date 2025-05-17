@@ -68,21 +68,23 @@ blocks:
           # stage login credentials for flakehub-push
           - export FLAKEHUB_PUSH_OIDC_TOKEN="${SEMAPHORE_OIDC_TOKEN}"
 
-          # test publishing a rolling release
-          # - note, now it uses FLAKEHUB_PUSH_ROLLING_MINOR which is unix timestamp each run
-          - flakehub-push --rolling --visibility private --include-output-paths
-
           # test magic-nix-cache
           # - |
           #   magic-nix-cache \
           #     --flakehub-api-server="${FLAKEHUB_API_ADDR}" \
           #     --flakehub-cache-server="${FLAKEHUB_CACHE_ADDR}" \
           #     --flakehub-flake-name="${FLAKEHUB_PUSH_REPOSITORY}" 
-          - magic-nix-cache & # no idea how backgrounding works in semaphore?
+          - nohup magic-nix-cache &>/tmp/mnc-log # no idea how backgrounding works in semaphore?
           - nix build '.#packages.x86_64-linux.default'
+
+          # test publishing a rolling release
+          # - note, now it uses FLAKEHUB_PUSH_ROLLING_MINOR which is unix timestamp each run
+          - flakehub-push --rolling --visibility private --include-output-paths
           
           - sleep 10 # wait on mnc, I guess
 
+          - cat /tmp/mnc-log
+          
           # delete path 
           - export RESULT="$(readlink -f ./result)"
           - export RESULT_RAND_EXPECTED="$(cat ./result)"
@@ -103,7 +105,7 @@ blocks:
             #   --option narinfo-cache-negative-ttl 0 \
             #     "${RESULT}"
           # TODO: subs for hardcoded string here:
-          - RUST_LOG=debug fh fetch "https://flakehub.com/f/DeterminateSystems/test-from-semaphore/${FLAKEHUB_PUSH_ROLLING_MINOR}.50#packages.x86_64-linux.default" /tmp/result
+          - RUST_LOG=debug fh fetch "https://flakehub.com/f/DeterminateSystems/test-from-semaphore/${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default" /tmp/result
           - export RESULT_RAND_ACTUAL="$(cat "${RESULT}")"
           - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
