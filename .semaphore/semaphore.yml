@@ -21,6 +21,7 @@ blocks:
           - cat /etc/lsb_release || true
           - cat /etc/os-release || true
           - env
+          - curl ipinfo.io || true
           - export FLAKEHUB_PUSH_REPOSITORY="$(echo "${SEMAPHORE_ORGANIZATION_URL}" | cut -d "." -f1 | cut -d '/' -f3)/${SEMAPHORE_PROJECT_NAME}"
           - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
           - export FH_CLOSURE_URL="https://install.determinate.systems/fh/branch/main/X64-Linux?ci=semaphore"
