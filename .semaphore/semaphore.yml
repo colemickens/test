@@ -80,8 +80,6 @@ blocks:
           # test publishing a rolling release
           # - note, now it uses FLAKEHUB_PUSH_ROLLING_MINOR which is unix timestamp each run
           - RUST_LOG=debug flakehub-push --rolling --visibility private --include-output-paths
-          
-          - sleep 10 # wait on mnc, I guess
 
           - cat /tmp/mnc-log
           
