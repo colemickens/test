@@ -90,7 +90,7 @@ blocks:
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
           - rm ./result*
           # - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
-          - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
+          - sudo nix store delete "${RESULT}" --ignore-liveness
 
           # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
           #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default")"
@@ -102,7 +102,7 @@ blocks:
             #   --option narinfo-cache-negative-ttl 0 \
             #     "${RESULT}"
           # TODO: subs for hardcoded string here:
-          - RUST_LOG=debug fh fetch "github:colemickens/test/${FLAKEHUB_PUSH_ROLLING_MINOR}.*#packages.x86_64-linux.default" /tmp/result
+          - RUST_LOG=debug fh fetch "https://flakehub.com/f/DeterminateSystems/test-from-semaphore/${FLAKEHUB_PUSH_ROLLING_MINOR}.*#packages.x86_64-linux.default" /tmp/result
           - export RESULT_RAND_ACTUAL="$(cat "${RESULT}")"
           - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
