@@ -53,6 +53,7 @@ blocks:
           # acquire `fh`:
           # - export FH_CLSR="$(curl -L "${FH_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import | tail -n1 | head -n1)"
           # - sudo ln -sf "${FH_CLSR}/bin/fh" /usr/bin/fh
+          # TODO: this might download rust with fh? does iti ... need to?
           - nix profile install -j0 'https://flakehub.com/f/DeterminateSystems/fh/*'
           - fh --help
 
@@ -100,7 +101,7 @@ blocks:
             #   --no-check-sigs \
             #   --option narinfo-cache-negative-ttl 0 \
             #     "${RESULT}"
-          - fh fetch "${RESULT}"
+          - RUST_LOG=debug fh fetch "${RESULT}" /tmp/result
           - export RESULT_RAND_ACTUAL="$(cat "${RESULT}")"
           - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
           - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
