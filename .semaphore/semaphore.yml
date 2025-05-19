@@ -1,11 +1,11 @@
 version: v1.0
-name: Initial Pipeline
+name: Determinate Nix Publish Pipeline
 agent:
   machine:
     type: f1-standard-4
     os_image: ubuntu2404
 blocks:
-  - name: 'Block #1'
+  - name: 'Build and Push'
     dependencies: []
     task:
       prologue:
@@ -13,29 +13,16 @@ blocks:
           # Get the latest version of our source code from GitHub:
           - checkout
 
-# TOOD: why don't nix commands work as root
-
       jobs:
-        - name: 'Job #1'
+        - name: 'Build and Push'
           commands:
-          - cat /etc/lsb_release || true
-          - cat /etc/os-release || true
-          - env
-          - curl ipinfo.io || true
+          # user defined
           - export FLAKEHUB_PUSH_REPOSITORY="$(echo "${SEMAPHORE_ORGANIZATION_URL}" | cut -d "." -f1 | cut -d '/' -f3)/${SEMAPHORE_PROJECT_NAME}"
-          - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/branch/main/X64-Linux?ci=semaphore"
-          - export FH_CLOSURE_URL="https://install.determinate.systems/fh/branch/main/X64-Linux?ci=semaphore"
-          - export MAGIC_NIX_CACHE_CLOSURE_URL="https://install.determinate.systems/magic-nix-cache-closure/branch/main/X64-Linux?ci=semaphore"
-
-          # debug only:
-          # - export FLAKEHUB_API_ADDR="https://api.cluster-activate-exited.ngrok-free.app/"
-          # - export FLAKEHUB_FRONTEND_ADDR="https://web.cluster-activate-exited.ngrok-free.app/"
-          # - export FLAKEHUB_CACHE_ADDR="https://cache.cluster-activate-exited.ngrok-free.app/" # TODO: `fh fetch` might not use this?
-          # - export FLAKEHUB_PUSH_HOST="${FLAKEHUB_API_ADDR}"
           - export FLAKEHUB_PUSH_REPOSITORY="DeterminateSystems/test-from-semaphore"
-          - export FLAKEHUB_PUSH_ROLLING_MINOR="$(date '+%s')"
-          # debug only:
-          - export FLAKEHUB_PUSH_BINARY_URL="https://install.determinate.systems/flakehub-push/pr/222/X64-Linux?ci=semaphore"
+
+          # implementation
+          - export MAGIC_NIX_CACHE_CLOSURE_URL="https://install.determinate.systems/magic-nix-cache-closure/branch/main/X64-Linux?ci=semaphore"
+          - export MNC_LISTEN="127.0.0.1:37515"
 
           # install determinate nix
           - curl --proto '=https' --tlsv1.2 -sSf -L https://install.determinate.systems/nix | sh -s -- install linux --determinate --no-confirm --init systemd
@@ -43,62 +30,52 @@ blocks:
 
           # login with `determinate-nixd login` (used by magic-nix-cache, substitutions)
           - echo "${SEMAPHORE_OIDC_TOKEN}" | determinate-nixd login token --token-file /dev/stdin
-          
+
           # acquire `flakehub-push`:
           - curl -L "${FLAKEHUB_PUSH_BINARY_URL}" | sudo tee /usr/bin/flakehub-push &>/dev/null
           - sudo chmod +x /usr/bin/flakehub-push
+
           # acquire `magic-nix-cache`:
           - export MNC_CLSR="$(curl -L "${MAGIC_NIX_CACHE_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import | tail -n1 | head -n1)"
           - sudo ln -sf "${MNC_CLSR}/bin/magic-nix-cache" /usr/bin/magic-nix-cache
           - magic-nix-cache --help
-          # acquire `fh`:
-          # - export FH_CLSR="$(curl -L "${FH_CLOSURE_URL}" | xz -d | sudo "$(which nix-store)" --import | tail -n1 | head -n1)"
-          # - sudo ln -sf "${FH_CLSR}/bin/fh" /usr/bin/fh
-          # TODO: this might download rust with fh? does iti ... need to?
-          - nix profile install -j0 'https://flakehub.com/f/DeterminateSystems/fh/*'
-          - fh --help
-
-          # debug only:
-          # - sudo systemctl set-environment FLAKEHUB_API_ADDR="${FLAKEHUB_API_ADDR}"
-          # - sudo systemctl set-environment FLAKEHUB_FRONTEND_ADDR="${FLAKEHUB_FRONTEND_ADDR}"
-          # - sudo systemctl set-environment FLAKEHUB_CACHE_ADDR="${FLAKEHUB_CACHE_ADDR}"
-          # - sudo systemctl daemon-reload
-          # - sudo systemctl restart nix-daemon
-
 
           # stage login credentials for flakehub-push
           - export FLAKEHUB_PUSH_OIDC_TOKEN="${SEMAPHORE_OIDC_TOKEN}"
 
-          # test magic-nix-cache
-          # - |
-          #   magic-nix-cache \
-          #     --flakehub-api-server="${FLAKEHUB_API_ADDR}" \
-          #     --flakehub-cache-server="${FLAKEHUB_CACHE_ADDR}" \
-          #     --flakehub-flake-name="${FLAKEHUB_PUSH_REPOSITORY}" 
-          - nohup magic-nix-cache &>/tmp/mnc-log & # no idea how backgrounding works in semaphore?
+          # start magic-nix-cache
+          - export MNC_STARTUP_FILE="/tmp/mnc-startup"
+          - nohup magic-nix-cache --listen "${MNC_LISTEN}" --startup-notification-file "${MNC_STARTUP_FILE}" &>/tmp/mnc.log &
+          - |
+              (
+              STARTED=0
+              for n in {1..6}; do
+                if [ -e "${MNC_STARTUP_FILE}" ]; then
+                  echo "magic-nix-cache daemon has successfully started up after ${n} attempt(s)"
+                  STARTED=1
+                  break
+                else
+                  echo "waiting on magic-nix-cache daemon; on attempt ${n}"
+                  sleep 2
+                fi
+              done
+              if [[ "${STARTED}" != "1" ]]; then
+                echo "The daemon did not start up within 60 seconds; exiting"
+                exit 1
+              fi
+              ) || true
+
+          # build product
           - nix build '.#packages.x86_64-linux.default'
 
-          # test publishing a rolling release
-          # - note, now it uses FLAKEHUB_PUSH_ROLLING_MINOR which is unix timestamp each run
-          - RUST_LOG=debug flakehub-push --rolling --visibility private --include-output-paths
+          # publish if and only if it's a tag reference
+          - |
+            if [[ "${SEMAPHORE_GIT_REF_TYPE}" == "tag" ]]; then
+              flakehub-push \
+                --tag "$(cat "${SEMAPHORE_GIT_REF}" | cut -d '/' -f2)" \
+                --visibility private \
+                --include-output-paths
+            fi
 
-          - cat /tmp/mnc-log
-          
-          # delete path 
-          - export RESULT="$(readlink -f ./result)"
-          - export RESULT_RAND_EXPECTED="$(cat ./result)"
-          - echo "RESULT=${RESULT}"
-          - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
-          - rm ./result*
-          - sudo "$(which nix)" store delete "${RESULT}" --ignore-liveness
-          # TODO: still doens't work on 24.04:
-          # - sudo nix store delete "${RESULT}" --ignore-liveness
-
-          # TODO: revisit when login is fixed, install 'fh' into profile from cache, then do this
-          #- export RESOLVED_OUT="$(fh resolve "github:colemickens/test/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default")"
-          #- nix build -j0 "${RESULT}"
-          # TODO: subs for hardcoded string here:
-          - RUST_LOG=debug fh fetch "https://flakehub.com/f/DeterminateSystems/test-from-semaphore/0.${FLAKEHUB_PUSH_ROLLING_MINOR}#packages.x86_64-linux.default" /tmp/result
-          - export RESULT_RAND_ACTUAL="$(cat "${RESULT}")"
-          - echo "RESULT_RAND_ACTUAL=${RESULT_RAND_ACTUAL}"
-          - echo "RESULT_RAND_EXPECTED=${RESULT_RAND_EXPECTED}"
+          # drain magic-nix-cache
+          - curl -XPOST "http://${MNC_LISTEN}/api/workflow-finish"
